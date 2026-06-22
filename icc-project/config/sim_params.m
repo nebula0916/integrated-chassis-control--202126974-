@@ -77,7 +77,7 @@ LIM.MAX_YAW_RATE    = deg2rad(60);   % [rad/s] 최대 요 레이트
 LIM.MAX_SLIP_ANGLE  = deg2rad(12);   % [rad] 최대 슬립 앵글
 
 %% Plant Model 선택
-SIM.plantModel = 'bicycle';  % 'bicycle' | '3dof' | '7dof' | '14dof'
+SIM.plantModel = '14dof';  % 'bicycle' | '3dof' | '7dof' | '14dof'
 
 %% 확장 차량 파라미터 (7DOF/14DOF용)
 VEH.Ix    = 600;      % [kg*m^2] 롤 관성 모멘트
