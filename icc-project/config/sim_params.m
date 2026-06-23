@@ -45,7 +45,7 @@ TIRE.E  = -0.5;    % Curvature factor
 TIRE.mu_peak = 1.0;  % 최대 마찰 계수
 
 %% 제어기 파라미터 — 횡방향 (Lateral)
-CTRL.LAT.Kp     = 1.7;     % 비례 게인
+CTRL.LAT.Kp     = 2.4;     % 비례 게인
 CTRL.LAT.Ki     = 0.10;     % 적분 게인
 CTRL.LAT.Kd     = 0.15;    % 미분 게인
 CTRL.LAT.intMax = 0.2;     % 적분 안티와인드업 한계 [rad]
