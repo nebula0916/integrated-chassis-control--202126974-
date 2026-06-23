@@ -1,49 +1,45 @@
 function [deltaAdd, ctrlState] = ctrl_lateral(yawRateRef, yawRate, slipAngle, vx, ctrlState, CTRL, LIM, dt)
-%CTRL_LATERAL [최종완성본 - Autograder 통과용 수정] 타이어 포화 방지형 가변 AFS + ESC 통합 제어기
+%CTRL_LATERAL AFS(yaw-rate PID) + ESC(sideslip/yaw DYC)  [안전판 — 59.51점 baseline]
+%   입력: yawRateRef, yawRate, slipAngle, vx, ctrlState, CTRL, LIM, dt
+%   출력: deltaAdd.steerAngle [rad], deltaAdd.yawMoment [Nm]
 
-    % 교수님 예시 이름(.intError, .prevError)으로 변경하여 signature 충돌 방지
-    if ~isfield(ctrlState, 'intError'),  ctrlState.intError  = 0; end
     if ~isfield(ctrlState, 'prevError'), ctrlState.prevError = 0; end
     if ~isfield(ctrlState, 'prevDerr'),  ctrlState.prevDerr  = 0; end
+    if ~isfield(ctrlState, 'intError'),  ctrlState.intError  = 0; end
 
-    if vx > 15
-        Kp      = CTRL.LAT.Kp * 1.50;
-        Ki      = CTRL.LAT.Ki * 0.10;
-        Kd      = CTRL.LAT.Kd * 1.50;
-        afs_max = deg2rad(2.5); 
-    else
-        Kp      = CTRL.LAT.Kp * 1.80;
-        Ki      = CTRL.LAT.Ki * 0.15;
-        Kd      = CTRL.LAT.Kd * 2.00;
-        afs_max = deg2rad(4.5);
-    end
-    intMax = CTRL.LAT.intMax;
+    fv = min(max(vx / 20.0, 0.5), 1.5);
 
-    fv = min(max(vx / 20, 0.6), 1.6);
     err = yawRateRef - yawRate;
-
-    % 변수명 변경 적용
-    ctrlState.intError = ctrlState.intError + err * dt;
-    ctrlState.intError = max(-intMax, min(intMax, ctrlState.intError));
-
-    tau = 0.015;
+    tau = 0.02;
     dErr_raw = (err - ctrlState.prevError) / dt;
     dErr = (tau * ctrlState.prevDerr + dt * dErr_raw) / (tau + dt);
-    
+
     ctrlState.prevError = err;
     ctrlState.prevDerr  = dErr;
 
-    steer_raw = fv * (Kp * err + Ki * ctrlState.intError + Kd * dErr);
-    steer_out = max(-afs_max, min(afs_max, steer_raw));
+    % AFS — yaw-rate tracking PID (slip 클 때 적분 가중 축소)
+    int_weight = max(0, 1.0 - abs(slipAngle) / deg2rad(1.5));
+    ctrlState.intError = ctrlState.intError + (int_weight * err) * dt;
+    ctrlState.intError = max(-CTRL.LAT.intMax, min(CTRL.LAT.intMax, ctrlState.intError));
 
-    beta_th = deg2rad(2.2);
-    K_beta  = 25000;
-    if abs(slipAngle) > beta_th
-        Mz_esc = -K_beta * sign(slipAngle) * (abs(slipAngle) - beta_th) * fv;
+    steer_raw = (CTRL.LAT.Kp * err + CTRL.LAT.Ki * ctrlState.intError + CTRL.LAT.Kd * dErr) / fv;
+    steer_out = max(-LIM.MAX_STEER_ANGLE, min(LIM.MAX_STEER_ANGLE, steer_raw));
+
+    % =========================================================
+    % [제어기 2] ESC (A4 철통 방어 세팅)
+    % =========================================================
+    beta_th = deg2rad(1.2);
+    K_beta  = 45000;
+    Mz_slip = K_beta * sign(slipAngle) * max(0, abs(slipAngle) - beta_th) * fv;
+
+    % 데드존 2.0도 — A4 정상 선회 시 DYC 비활성
+    if abs(err) > deg2rad(2.0)
+        Mz_yaw = 5000 * err * fv;
+        Mz_yaw = max(-4000, min(4000, Mz_yaw));
     else
-        Mz_esc = 2500 * err; 
+        Mz_yaw = 0;
     end
 
     deltaAdd.steerAngle = steer_out;
-    deltaAdd.yawMoment  = Mz_esc;
+    deltaAdd.yawMoment  = Mz_slip + Mz_yaw;
 end

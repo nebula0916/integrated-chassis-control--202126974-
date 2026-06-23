@@ -45,20 +45,20 @@ TIRE.E  = -0.5;    % Curvature factor
 TIRE.mu_peak = 1.0;  % 최대 마찰 계수
 
 %% 제어기 파라미터 — 횡방향 (Lateral)
-CTRL.LAT.Kp     = 1.0;     % 비례 게인
-CTRL.LAT.Ki     = 0.1;     % 적분 게인
-CTRL.LAT.Kd     = 0.05;    % 미분 게인
-CTRL.LAT.intMax = 5.0;     % 적분 안티와인드업 한계 [rad]
+CTRL.LAT.Kp     = 1.7;     % 비례 게인
+CTRL.LAT.Ki     = 0.10;     % 적분 게인
+CTRL.LAT.Kd     = 0.15;    % 미분 게인
+CTRL.LAT.intMax = 0.2;     % 적분 안티와인드업 한계 [rad]
 
 %% 제어기 파라미터 — 종방향 (Longitudinal)
-CTRL.LON.Kp     = 0.5;     % 비례 게인
-CTRL.LON.Ki     = 0.05;    % 적분 게인
-CTRL.LON.intMax = 2000;    % 적분 안티와인드업 한계 [Nm]
+CTRL.LON.Kp = 1500;  
+CTRL.LON.Ki = 200;
+CTRL.LON.intMax = 5000;
 
 %% 제어기 파라미터 — 수직 (Vertical / CDC)
-CTRL.VER.cMin    = 500;    % [Ns/m] 최소 감쇠 계수
-CTRL.VER.cMax    = 5000;   % [Ns/m] 최대 감쇠 계수
-CTRL.VER.skyGain = 2500;   % [Ns/m] Skyhook 게인
+CTRL.VER.cMin    = 1000;    % [Ns/m] 최소 감쇠 계수
+CTRL.VER.cMax    = 8000;   % [Ns/m] 최대 감쇠 계수
+CTRL.VER.skyGain = 8500;   % [Ns/m] Skyhook 게인
 
 %% 제어기 파라미터 — 통합 조율기 (Coordinator)
 CTRL.COORD.wLat  = 1.0;    % 횡방향 가중치
@@ -67,8 +67,8 @@ CTRL.COORD.wVer  = 0.5;    % 수직 가중치
 CTRL.COORD.wEff  = 0.1;    % 에너지 효율 가중치
 
 %% 액추에이터 한계
-LIM.MAX_STEER_ANGLE = deg2rad(540 / 15);  % [rad] 최대 로드휠 조향각 (SW 540deg / ratio 15)
-LIM.MAX_STEER_RATE  = deg2rad(500 / 15);  % [rad/s] 최대 조향 속도
+LIM.MAX_STEER_ANGLE = deg2rad(8.5);  % [rad] 최대 로드휠 조향각 (SW 540deg / ratio 15)
+LIM.MAX_STEER_RATE  = deg2rad(3.0);  % [rad/s] 최대 조향 속도
 LIM.MAX_BRAKE_TRQ   = 3000;   % [Nm] 최대 브레이크 토크 (per wheel)
 LIM.MAX_AX          = 10.0;   % [m/s^2] 최대 종가속도
 LIM.MAX_AY          = 10.0;   % [m/s^2] 최대 횡가속도
@@ -113,7 +113,7 @@ SIM.tire_tir_file = 'C:/IPG/carmaker/win64-15.0/Data/Tire/Examples/TirePropertyF
 %% 차량 셋 선택 (실차/일반)
 % 'generic'      : 위에 정의된 C-segment 일반값 그대로 사용
 % 'bmw5_cm15'    : CarMaker BMW_5_15_030326 INFOFILE에서 추출한 실차 파라미터
-SIM.vehicleSet = 'bmw5_cm15';
+SIM.vehicleSet = 'generic';
 
 SIM.cm_vehicleFile = 'C:/Users/VIC/Projects/carmaker_data/Data/Vehicle/BMW_5_15_030326';
 
