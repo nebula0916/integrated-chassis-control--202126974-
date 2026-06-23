@@ -45,7 +45,7 @@ TIRE.E  = -0.5;    % Curvature factor
 TIRE.mu_peak = 1.0;  % 최대 마찰 계수
 
 %% 제어기 파라미터 — 횡방향 (Lateral)
-CTRL.LAT.Kp     = 2.4;     % 비례 게인
+CTRL.LAT.Kp     = 1.7;     % 비례 게인
 CTRL.LAT.Ki     = 0.10;     % 적분 게인
 CTRL.LAT.Kd     = 0.15;    % 미분 게인
 CTRL.LAT.intMax = 0.2;     % 적분 안티와인드업 한계 [rad]
@@ -113,7 +113,7 @@ SIM.tire_tir_file = 'C:/IPG/carmaker/win64-15.0/Data/Tire/Examples/TirePropertyF
 %% 차량 셋 선택 (실차/일반)
 % 'generic'      : 위에 정의된 C-segment 일반값 그대로 사용
 % 'bmw5_cm15'    : CarMaker BMW_5_15_030326 INFOFILE에서 추출한 실차 파라미터
-SIM.vehicleSet = 'generic';
+SIM.vehicleSet = 'bmw5_cm15';
 
 SIM.cm_vehicleFile = 'C:/Users/VIC/Projects/carmaker_data/Data/Vehicle/BMW_5_15_030326';
 
